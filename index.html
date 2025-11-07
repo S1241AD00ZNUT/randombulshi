@@ -267,12 +267,16 @@
         return;
       }
     
-      // Check if piece can move down
+      // Check if the piece can move down
       const canMove = tetrisPiece.shape.every(([dx, dy]) => {
-        const newY = tetrisPiece.y + dy + 1;
         const newX = tetrisPiece.x + dx;
+        const newY = tetrisPiece.y + dy + 1;
+    
+        // Check bounds and collision
         return (
           newY < tileCountY &&
+          newX >= 0 &&
+          newX < tileCountX &&
           tetrisGrid[newY][newX] === 0
         );
       });
@@ -280,24 +284,26 @@
       if (canMove) {
         tetrisPiece.y++;
       } else {
-        // Lock piece into grid
+        // Lock the piece into the grid
         tetrisPiece.shape.forEach(([dx, dy]) => {
           const x = tetrisPiece.x + dx;
           const y = tetrisPiece.y + dy;
-          if (y < tileCountY && x < tileCountX) {
+          if (y >= 0 && y < tileCountY && x >= 0 && x < tileCountX) {
             tetrisGrid[y][x] = 1;
           }
         });
-for (let y = tileCountY - 1; y >= 0; y--) {
-      if (tetrisGrid[y].every(cell => cell === 1)) {
-        tetrisGrid.splice(y, 1);
-        tetrisGrid.unshift(Array(tileCountX).fill(0));
-        score += 5;
-        scoreDisplay.textContent = "Skor: " + score;
-        y++; // recheck same row
-      }
-    }
-        
+    
+        // Clear full rows
+        for (let y = tileCountY - 1; y >= 0; y--) {
+          if (tetrisGrid[y].every(cell => cell === 1)) {
+            tetrisGrid.splice(y, 1);
+            tetrisGrid.unshift(Array(tileCountX).fill(0));
+            score += 5;
+            scoreDisplay.textContent = "Skor: " + score;
+            y++;
+          }
+        }
+    
         score++;
         scoreDisplay.textContent = "Skor: " + score;
         tetrisPiece = null;
@@ -397,4 +403,5 @@ for (let y = tileCountY - 1; y >= 0; y--) {
   </script>
 </body>
 </html>
+
 
