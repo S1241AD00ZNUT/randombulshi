@@ -262,14 +262,42 @@
     }
 
     function moveTetrisDown() {
-      if (!tetrisPiece) spawnTetrisPiece();
-      tetrisPiece.y++;
-      if (tetrisPiece.y > tileCountY - 2) {
+      if (!tetrisPiece) {
+        spawnTetrisPiece();
+        return;
+      }
+    
+      // Check if piece can move down
+      const canMove = tetrisPiece.shape.every(([dx, dy]) => {
+        const newY = tetrisPiece.y + dy + 1;
+        const newX = tetrisPiece.x + dx;
+        return (
+          newY < tileCountY &&
+          tetrisGrid[newY][newX] === 0
+        );
+      });
+    
+      if (canMove) {
+        tetrisPiece.y++;
+      } else {
+        // Lock piece into grid
         tetrisPiece.shape.forEach(([dx, dy]) => {
           const x = tetrisPiece.x + dx;
           const y = tetrisPiece.y + dy;
-          if (y < tileCountY && x < tileCountX) tetrisGrid[y][x] = 1;
+          if (y < tileCountY && x < tileCountX) {
+            tetrisGrid[y][x] = 1;
+          }
         });
+for (let y = tileCountY - 1; y >= 0; y--) {
+      if (tetrisGrid[y].every(cell => cell === 1)) {
+        tetrisGrid.splice(y, 1);
+        tetrisGrid.unshift(Array(tileCountX).fill(0));
+        score += 5;
+        scoreDisplay.textContent = "Skor: " + score;
+        y++; // recheck same row
+      }
+    }
+        
         score++;
         scoreDisplay.textContent = "Skor: " + score;
         tetrisPiece = null;
@@ -369,3 +397,4 @@
   </script>
 </body>
 </html>
+
