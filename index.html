@@ -237,29 +237,44 @@
     }
 
     function drawTetrisGame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Draw grid background
-      for (let y = 0; y < tileCountY; y++) {
-        for (let x = 0; x < tileCountX; x++) {
-          drawTile(x, y, tetrisGrid[y][x] ? "#10b981" : "#071025");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw grid background
+        for (let y = 0; y < tileCountY; y++) {
+          for (let x = 0; x < tileCountX; x++) {
+            drawTile(x, y, tetrisGrid[y][x] ? "#10b981" : "#071025");
+          }
+        }
+        // Draw active piece
+        if (tetrisPiece) {
+          tetrisPiece.shape.forEach(([dx, dy]) => {
+            drawTile(tetrisPiece.x + dx, tetrisPiece.y + dy, "#fff");
+          });
         }
       }
-      // Draw active piece
-      if (tetrisPiece) {
-        tetrisPiece.shape.forEach(([dx, dy]) => {
-          drawTile(tetrisPiece.x + dx, tetrisPiece.y + dy, "#fff");
-        });
-      }
+  
+  
+      function spawnTetrisPiece() {
+    const newPiece = {
+      x: Math.floor(tileCountX / 2),
+      y: 0,
+      shape: [[0,0],[1,0],[0,1],[1,1]] // square block
+    };
+  
+    // Check if spawn position is already occupied
+    const isBlocked = newPiece.shape.some(([dx, dy]) => {
+      const x = newPiece.x + dx;
+      const y = newPiece.y + dy;
+      return tetrisGrid[y]?.[x] === 1;
+    });
+  
+    if (isBlocked) {
+      alert("Game Over! Tetris stack reached the top.");
+      resetTetris();
+      return;
     }
-
-
-    function spawnTetrisPiece() {
-      tetrisPiece = {
-        x: Math.floor(tileCountX / 2),
-        y: 0,
-        shape: [[0,0],[1,0],[0,1],[1,1]]
-      };
-    }
+  
+    tetrisPiece = newPiece;
+  }
 
     function moveTetrisDown() {
       if (!tetrisPiece) {
@@ -403,5 +418,6 @@
   </script>
 </body>
 </html>
+
 
 
