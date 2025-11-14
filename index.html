@@ -136,15 +136,23 @@
         <div class="filler">🧱 Right filler<br/>Customize this too</div>
       </div>
 
-      <div id="mobileControls">
+      <div id="snakeControls">
         <button onclick="setDirection('up')">⬆️</button><br/>
         <button onclick="setDirection('left')">⬅️</button>
         <button onclick="setDirection('down')">⬇️</button>
         <button onclick="setDirection('right')">➡️</button><br/>
-        <button onclick="rotatePiece()">🔄 Rotate</button>
-        <button onclick="hardDrop()">⏬ Drop</button>
         <button onclick="togglePause()">⏯️ Pause</button>
-        <button onclick="toggleMode()">🎮 Mode</button>
+        <button onclick="toggleMode()">🎮 Switch to Tetris</button>
+      </div>
+
+      <div id="tetrisControls" style="display:none;">
+        <button onclick="moveLeft()">⬅️</button>
+        <button onclick="moveRight()">➡️</button>
+        <button onclick="rotatePiece()">🔄 Rotate</button>
+        <button onclick="softDrop()">⬇️ Drop</button><br/>
+        <button onclick="hardDrop()">⏬ Hard Drop</button>
+        <button onclick="togglePause()">⏯️ Pause</button>
+        <button onclick="toggleMode()">🎮 Switch to Snake</button>
       </div>
     </div>
   </div>
@@ -400,9 +408,27 @@
         else if (dir === "right") tetrisPiece.x++;
       }
     }
+    function moveLeft() {
+      if (gameMode === "tetris" && tetrisPiece) {
+        tetrisPiece.x = Math.max(0, tetrisPiece.x - 1);
+      }
+    }
+    
+    function moveRight() {
+      if (gameMode === "tetris" && tetrisPiece) {
+        tetrisPiece.x = Math.min(tileCountX - 1, tetrisPiece.x + 1);
+      }
+    }
+    
     function rotatePiece() {
       if (gameMode === "tetris" && tetrisPiece) {
         tetrisPiece.shape = tetrisPiece.shape.map(([dx, dy]) => [-dy, dx]);
+      }
+    }
+    
+    function softDrop() {
+      if (gameMode === "tetris" && tetrisPiece) {
+        moveTetrisDown();
       }
     }
     
@@ -412,19 +438,20 @@
       }
     }
 
-    function togglePause() {
-      isPaused = !isPaused;
-    }
-
     function toggleMode() {
       gameMode = gameMode === "snake" ? "tetris" : "snake";
       alert("Mode diganti ke: " + gameMode.toUpperCase());
       clearInterval(gameLoop);
+    
       if (gameMode === "snake") {
         resetSnake();
+        document.getElementById("snakeControls").style.display = "block";
+        document.getElementById("tetrisControls").style.display = "none";
       } else {
         resetTetris();
         gameLoop = setInterval(gameTick, 500);
+        document.getElementById("snakeControls").style.display = "none";
+        document.getElementById("tetrisControls").style.display = "block";
       }
     }
 
@@ -437,6 +464,7 @@
   </script>
 </body>
 </html>
+
 
 
 
